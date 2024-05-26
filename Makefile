@@ -1,69 +1,47 @@
-########################################################################
-####################### Makefile Template ##############################
-########################################################################
+# Compiler and flags
+CXX := g++
+CXXFLAGS := -Wall -Wextra -O2 -I src
 
-# Compiler settings - Can be customized.
-CC = g++
-CXXFLAGS = -std=c++17 -Wall -D_DEBUG
-LDFLAGS = 
+# Directories
+SRCDIR := src
+OBJDIR := obj
+DEPDIR := dep
 
-# Makefile settings - Can be customized.
-APPNAME = mincut-karger-simple
-EXT = .cpp
-SRCDIR = src
-OBJDIR = obj
+# File extensions
+SRCEXT := cpp
+DEPEXT := d
+OBJEXT := o
 
-############## Do not change anything from here downwards! #############
-SRC = $(wildcard $(SRCDIR)/*$(EXT))
-OBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)/%.o)
-DEP = $(OBJ:$(OBJDIR)/%.o=%.d)
-# UNIX-based OS variables & settings
-RM = rm
-DELOBJ = $(OBJ)
-# Windows OS variables & settings
-DEL = del
-EXE = .exe
-WDELOBJ = $(SRC:$(SRCDIR)/%$(EXT)=$(OBJDIR)\\%.o)
+# Collect all source files
+SOURCES := $(shell find $(SRCDIR) -name '*.$(SRCEXT)')
 
-########################################################################
-####################### Targets beginning here #########################
-########################################################################
+# Generate object files and dependency files paths
+OBJECTS := $(SOURCES:$(SRCDIR)/%.$(SRCEXT)=$(OBJDIR)/%.$(OBJEXT))
+DEPS := $(OBJECTS:$(OBJDIR)/%.$(OBJEXT)=$(DEPDIR)/%.$(DEPEXT))
 
-all: $(APPNAME)
+# Output executable name
+TARGET := mincut
 
-# Builds the app
-$(APPNAME): $(OBJ)
-	$(CC) $(CXXFLAGS) -o $@ $^ $(LDFLAGS)
+# Default target
+all: $(TARGET)
 
-# Creates the dependecy rules
-%.d: $(SRCDIR)/%$(EXT)
-	@$(CPP) $(CFLAGS) $< -MM -MT $(@:%.d=$(OBJDIR)/%.o) >$@
+# Link the program
+$(TARGET): $(OBJECTS)
+	$(CXX) $(OBJECTS) -o $@
 
-# Includes all .h files
--include $(DEP)
+# Compile source files to object files and generate dependencies
+$(OBJDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
+	@mkdir -p $(dir $@)
+	@mkdir -p $(dir $(DEPDIR)/$*)
+	$(CXX) $(CXXFLAGS) -MMD -MP -c $< -o $@
+	@mv $(OBJDIR)/$*.$(DEPEXT) $(DEPDIR)/$*.$(DEPEXT)
 
-# Building rule for .o files and its .c/.cpp in combination with all .h
-$(OBJDIR)/%.o: $(SRCDIR)/%$(EXT)
-	$(CC) $(CXXFLAGS) -o $@ -c $<
+# Include the dependency files
+-include $(DEPS)
 
-################### Cleaning rules for Unix-based OS ###################
-# Cleans complete project
-.PHONY: clean
+# Clean up generated files
 clean:
-	$(RM) $(DELOBJ) $(DEP) $(APPNAME)
+	rm -rf $(OBJDIR) $(DEPDIR) $(TARGET)
 
-# Cleans only all files with the extension .d
-.PHONY: cleandep
-cleandep:
-	$(RM) $(DEP)
-
-#################### Cleaning rules for Windows OS #####################
-# Cleans complete project
-.PHONY: cleanw
-cleanw:
-	$(DEL) $(WDELOBJ) $(DEP) $(APPNAME)$(EXE)
-
-# Cleans only all files with the extension .d
-.PHONY: cleandepw
-cleandepw:
-	$(DEL) $(DEP)
+# Phony targets
+.PHONY: all clean
