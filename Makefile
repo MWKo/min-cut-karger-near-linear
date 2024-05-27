@@ -1,6 +1,7 @@
 # Compiler and flags
 CXX := g++
-CXXFLAGS := -Wall -Wextra -O2 -I src
+CXXFLAGS := -Wall -Wextra -O2 -std=c++17 -I src
+CXXLINKFLAGS := 
 
 # Directories
 SRCDIR := src
@@ -27,7 +28,7 @@ all: $(TARGET)
 
 # Link the program
 $(TARGET): $(OBJECTS)
-	$(CXX) $(OBJECTS) -o $@
+	$(CXX) $(CXXLINKFLAGS) $(OBJECTS) -o $@
 
 # Compile source files to object files and generate dependencies
 $(OBJDIR)/%.$(OBJEXT): $(SRCDIR)/%.$(SRCEXT)
