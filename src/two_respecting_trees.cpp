@@ -10,8 +10,7 @@
  * Returns upper bound for the size of the minimum cut
 */
 static EdgeMultiplicity mcwUpperBound(const MultiGraph& graph) {
-    std::vector<size_t> edgeIndices(graph.numVertices() - 1);
-    maxSpanningTree(edgeIndices.data(), edgeIndices.size(), graph);
+    std::vector<size_t> edgeIndices = maxSpanningTree(graph);
     EdgeMultiplicity maxMultiplicity = 0;
     for (size_t index : edgeIndices) {
         EdgeMultiplicity multiplicity = graph.edges()[index].multiplicity();
