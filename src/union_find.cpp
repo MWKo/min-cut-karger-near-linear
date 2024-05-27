@@ -1,10 +1,8 @@
 #include "union_find.hpp"
+#include <numeric>
 
-UnionFind::UnionFind(dtype n) : mHeight(n, 0) {
-    mParents.reserve(n);
-    for (dtype i = 0; i < n; i++) {
-        mParents.push_back(i);
-    }
+UnionFind::UnionFind(dtype n) : mParents(n), mHeight(n, 0) {
+    std::iota(mParents.begin(), mParents.end(), 0);
 }
 
 UnionFind::dtype UnionFind::find(dtype x) const {   
