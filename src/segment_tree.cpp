@@ -7,8 +7,8 @@ void SegmentTree::initTree(const DataType* list, size_t left, size_t right, size
     }
 
     size_t middle = (left + right) / 2;
-    size_t indexLeftChild = valuesIndex * 2;
-    size_t indexRightChild = valuesIndex * 2 + 1;
+    size_t indexLeftChild = valuesIndex * 2 + 1;
+    size_t indexRightChild = valuesIndex * 2 + 2;
     
     initTree(list, left, middle, indexLeftChild);
     initTree(list, middle + 1, right, indexRightChild);
@@ -23,17 +23,16 @@ void SegmentTree::updateLazy(size_t valuesIndex, size_t left, size_t right) {
         value += lazy;
         if (left < right) {
             // Propagate to children
-            mLazy[valuesIndex * 2] += lazy;
             mLazy[valuesIndex * 2 + 1] += lazy;
+            mLazy[valuesIndex * 2 + 2] += lazy;
         }
         lazy = 0;
     }
 }
 
 void SegmentTree::addToIntervalRecursive(DataType value2add, size_t intervalStart, size_t intervalEnd, size_t left, size_t right, size_t valuesIndex) {    
-    DataType& value = mValues[valuesIndex];
-    size_t indexLeftChild = valuesIndex * 2;
-    size_t indexRightChild = valuesIndex * 2 + 1;
+    size_t indexLeftChild = valuesIndex * 2 + 1;
+    size_t indexRightChild = valuesIndex * 2 + 2;
     
     updateLazy(valuesIndex, left, right);
 
@@ -42,6 +41,7 @@ void SegmentTree::addToIntervalRecursive(DataType value2add, size_t intervalStar
 
     // Interval range completely covers node's range
     if (left <= intervalStart && intervalEnd <= right) {
+        DataType& value = mValues[valuesIndex];
         value += value2add;
         if (left < right) {
             // Propagate to children
@@ -72,8 +72,8 @@ size_t SegmentTree::minIndex() {
 
     while (left < right) {
         size_t middle = (left + right) / 2;
-        size_t indexLeftChild = valuesIndex * 2;
-        size_t indexRightChild = valuesIndex * 2 + 1;
+        size_t indexLeftChild = valuesIndex * 2 + 1;
+        size_t indexRightChild = valuesIndex * 2 + 2;
 
         updateLazy(valuesIndex, left, middle);
         updateLazy(valuesIndex, middle + 1, right);
